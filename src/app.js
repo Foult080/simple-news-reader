@@ -2,6 +2,8 @@ require('dotenv').config()
 const path = require('path')
 const express = require('express')
 const app = express()
+const fileUpload = require('express-fileupload')
+
 const connectDB = require('./utils/dbConnector.js')
 
 // подключение к MongoDB
@@ -13,6 +15,9 @@ app.use(cors())
 
 // use json encode
 app.use(express.json({ extended: false }))
+
+// middleware для загрузки файлов
+app.use(fileUpload({ createParentPath: true, useTempFiles: false }))
 
 // маршруты для api
 app.use('/api', require('./routes'))

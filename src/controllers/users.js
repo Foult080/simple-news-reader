@@ -45,10 +45,8 @@ const authUser = async (req, res, next) => {
     const isMatch = isMatchPassword(password, user.password, user.salt)
     if (!isMatch) throw Unauthorized('Не корректное имя пользователя или пароль')
 
-    // убираем лишнее из объекта пользователя
-    delete user.password
-    delete user.salt
-    const authToken = jwt.sign({ name: user.name, email: user.email, date: user.date }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFE })
+    const payload = { name: user.name, email: user.email, date: user.date, user_id: user._id }
+    const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFE })
 
     return res.status(200).json({ msg: 'Вы успешно авторизовались', authToken })
   } catch (error) {

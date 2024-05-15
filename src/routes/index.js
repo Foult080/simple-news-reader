@@ -1,10 +1,12 @@
 const router = require('express').Router()
 const version = require('../../package.json').version
-// const { checkToken } = require('../middlewares/checkToken')
+const { checkToken } = require('../middlewares/checkToken')
 
-// api routes
 // маршрут для пользователей
 router.use('/users', require('./users'))
+
+// маршрут для новостей
+router.use('/news', checkToken, require('./news'))
 
 // проверка работы для k8, zabbix или др
 router.get('/health', async (req, res) => res.status(200).json({ success: true, version, msg: 'Сервис работает стабильно' }))
