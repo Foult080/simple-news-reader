@@ -24,7 +24,10 @@ const registerUser = async (req, res, next) => {
     const userRecord = new User({ name, email, salt, password: hashded })
     await userRecord.save()
 
-    return res.status(200).json({ msg: 'Пользователь успешно зарегистрирован' })
+    const payload = { name: user.name, email: user.email, date: user.date, user_id: user._id }
+    const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFE })
+
+    return res.status(200).json({ msg: 'Пользователь успешно зарегистрирован', user: payload, authToken })
   } catch (error) {
     handleError(error, next)
   }
@@ -48,7 +51,7 @@ const authUser = async (req, res, next) => {
     const payload = { name: user.name, email: user.email, date: user.date, user_id: user._id }
     const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFE })
 
-    return res.status(200).json({ msg: 'Вы успешно авторизовались', authToken })
+    return res.status(200).json({ msg: 'Вы успешно авторизовались', user: payload, authToken })
   } catch (error) {
     handleError(error, next)
   }

@@ -4,7 +4,9 @@
   "description": "Проект для портфолио",
   "main": "index.js",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "vite": "cd ./frontend && npm run dev",
+    "build": "cd ./frontend && npm run build"
   },
   "keywords": [],
   "author": "foult080",

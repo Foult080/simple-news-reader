@@ -29,6 +29,6 @@ router.post(
 )
 
 // получить информацию из токена
-router.get('/', checkToken, checkUserToken)
+router.get('/auth', checkToken, checkUserToken)
 
 module.exports = router
