@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Container, Header } from 'semantic-ui-react'
+import { Button, Container, Header, Icon } from 'semantic-ui-react'
 
 /**
  * Заглушка для 401
@@ -8,10 +8,11 @@ import { Button, Container, Header } from 'semantic-ui-react'
 const Forbidden = () => {
   return (
     <Container>
-      <div style={{ justifyContent: 'center', textAlign: 'center', alignItems: 'center' }}>
+      <div style={{ justifyContent: 'center', textAlign: 'center', alignItems: 'center', marginTop: '2rem' }}>
+        <Icon size="massive" name="close" color="red" />
         <Header as="h2" textAlign="center" content="Действие запрещено" style={{ marginTop: '1rem' }} />
         <Link to="/">
-          <Button color="green" content="Назад на главную" size="large" />
+          <Button color="teal" content="Назад на главную" size="medium" />
         </Link>
       </div>
     </Container>

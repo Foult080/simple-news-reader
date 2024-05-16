@@ -15,6 +15,7 @@ import { RequireAuth } from './components/auth/RequireAuth'
 import Forbidden from './components/Forbidden'
 import NotFound from './components/NotFound'
 import Footer from './components/Footer'
+import News from './components/News'
 
 // компоненты для страницы
 
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/new-user" element={<RegisterUser />} />
             <Route element={<RequireAuth />}>
               <Route path="/" element={<MainPage />} />
+              <Route path="/news/:id" element={<News />} />
             </Route>
             <Route element={<Forbidden />} path="/forbidden" />
             <Route path="*" element={<NotFound />} />

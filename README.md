@@ -37,4 +37,5 @@
 - Redux Toolkit;
 - Vite;
 - Formik;
-- Semantic UI.
+- Semantic UI;
+- ReactMarkdown.

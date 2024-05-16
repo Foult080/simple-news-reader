@@ -1,7 +1,8 @@
-const { handleError } = require('../utils/errorsHandler')
+const { handleError, NotFound, Forbidden } = require('../utils/errorsHandler')
 const path = require('path')
 const News = require('../models/news')
 const File = require('../models/files')
+const { isValidObjectId } = require('mongoose')
 
 // путь к папке в зависимости от окружения
 const filesPath = process.env.ENV === 'production' ? path.resolve('frontend', 'build', 'public', 'files') : path.resolve('frontend', 'public', 'files')
@@ -42,7 +43,7 @@ const saveFiles = async (idUser, savePath, files) => {
  */
 const addNewsRecord = async (req, res, next) => {
   try {
-    const { title, description, releaseDate } = req.body
+    const { title, description, releaseDate, content } = req.body
     const { user_id } = req.user
 
     // проверка существания файлов в запросе
@@ -52,7 +53,7 @@ const addNewsRecord = async (req, res, next) => {
     const newsImage = await saveFiles(user_id, imagesPath, image)
 
     // формируем запись для вставки
-    const newsRecord = new News({ title, description, releaseDate, user: user_id, image: newsImage, files: filesData })
+    const newsRecord = new News({ title, description, releaseDate, user: user_id, image: newsImage, files: filesData, content })
     await newsRecord.save()
 
     return res.status(200).json({ msg: 'Запись успешно создана' })
@@ -68,7 +69,6 @@ const getNewsRecords = async (req, res, next) => {
   try {
     const currentDate = new Date()
     const data = await News.find({ releaseDate: { $lte: currentDate } })
-      .populate('files')
       .populate({ path: 'user', select: 'name email' })
       .populate('image')
     return res.status(200).json({ data, count: data.length })
@@ -103,4 +103,23 @@ const deleteNewsRecord = async (req, res, next) => {
   }
 }
 
-module.exports = { addNewsRecord, getNewsRecords, getMyNewsRecords, deleteNewsRecord }
+/**
+ * Получить запись по id
+ */
+const getNewsRecord = async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    // проверка валидности объекта
+    const check = isValidObjectId(id)
+    if (!check) throw Forbidden('Действие запрещено')
+
+    const data = await News.findOne({ _id: id }).populate({ path: 'user', select: 'name email' }).populate('image').populate('files')
+    if (!data) throw NotFound('Запись с этим идентификатор не найдена')
+    return res.status(200).json({ data })
+  } catch (error) {
+    handleError(error, next)
+  }
+}
+
+module.exports = { addNewsRecord, getNewsRecords, getNewsRecord, getMyNewsRecords, deleteNewsRecord }

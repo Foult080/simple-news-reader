@@ -12,9 +12,30 @@ export const loadNews = createAsyncThunk('news/loadNews', async (data, { rejectW
   }
 })
 
+// загрузка записи новости
+export const loadRecord = createAsyncThunk('news/loadRecord', async (data, { rejectWithValue }) => {
+  try {
+    const res = await axiosApiInstance.get(baseUrl + '/api/news/' + data)
+    return res.data
+  } catch (error) {
+    return rejectWithValue({ status: error.response.status, data: error.response.data })
+  }
+})
+
+// удалить запись из базы
+export const deleteRecord = createAsyncThunk('news/deleteRecord', async (data, { rejectWithValue }) => {
+  try {
+    const res = await axiosApiInstance.delete(baseUrl + '/api/news/' + data)
+    return res.data
+  } catch (error) {
+    return rejectWithValue({ status: error.response.status, data: error.response.data })
+  }
+})
+
 const initialState = {
   loading: false,
   news: [],
+  record: { title: '', description: '', content: '', files: [], image: '', user: null },
   count: null,
   alert: null
 }
@@ -29,6 +50,27 @@ export const NewsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // загрузка новости для стараницы просмотра
+      .addCase(loadRecord.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(loadRecord.fulfilled, (state, action) => {
+        state.loading = false
+        state.record = action.payload.data
+      })
+      .addCase(loadRecord.rejected, (state, action) => {
+        const { status } = action.payload
+        state.loading = false
+        state.alert = action.payload
+        // делаем резкий переход на страницы с соответствующие статусу
+        // TODO: Вынести в axios intercepror
+        switch (status) {
+          case 403:
+            return window.location.replace('/forbidden')
+          default:
+            return window.location.replace('/not-found')
+        }
+      })
       // загрузка новостей для главной страницы
       .addCase(loadNews.pending, (state) => {
         state.loading = true
