@@ -8,6 +8,7 @@ const newsSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   releaseDate: { type: Date, default: Date.now },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+  image: { type: mongoose.Schema.Types.ObjectId, ref: 'files' },
   files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'files' }]
 })
 

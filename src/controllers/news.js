@@ -4,35 +4,37 @@ const News = require('../models/news')
 const File = require('../models/files')
 
 // путь к папке в зависимости от окружения
-const filesPath = process.env.ENV === 'production' ? path.resolve('frontend', 'build', 'files') : path.resolve('frontend', 'public', 'files')
+const filesPath = process.env.ENV === 'production' ? path.resolve('frontend', 'build', 'public', 'files') : path.resolve('frontend', 'public', 'files')
+const imagesPath = process.env.ENV === 'production' ? path.resolve('frontend', 'build', 'public', 'images') : path.resolve('frontend', 'public', 'images')
 
 /**
  * Метод для сохранения файла в директорию
  * @param {String} idUser - идентификатор пользователя
+ * @param {String} savePath - путь для файла
  * @param {Array} files - массив файлов
  * @returns {Array}
  */
-const saveFiles = async (idUser, files) => {
-  const result = []
+const saveFiles = async (idUser, savePath, files) => {
   //! express file upload может вернуть как объект, так и массив объектов
   if (!Array.isArray(files)) {
     files.name = idUser + '-' + files.name
-    const pathToFile = path.join(filesPath, files.name)
+    const pathToFile = path.join(savePath, files.name)
     await files.mv(pathToFile)
     const fileObject = new File({ name: files.name })
     await fileObject.save()
-    result.push(fileObject)
+    return fileObject
   } else {
+    const result = []
     for await (const file of files) {
       file.name = idUser + '-' + file.name
-      const pathToFile = path.join(filesPath, file.name)
+      const pathToFile = path.join(savePath, file.name)
       await file.mv(pathToFile)
       const fileObject = new File({ name: file.name })
       await fileObject.save()
       result.push(fileObject)
     }
+    return result
   }
-  return result
 }
 
 /**
@@ -42,11 +44,17 @@ const addNewsRecord = async (req, res, next) => {
   try {
     const { title, description, releaseDate } = req.body
     const { user_id } = req.user
-    // проверка существания файла в запросе
-    const { files } = req.files
-    const filesData = await saveFiles(user_id, files)
-    const newsRecord = new News({ title, description, releaseDate, user: user_id, files: filesData })
+
+    // проверка существания файлов в запросе
+    const { files = null, image = null } = req.files
+    let filesData = []
+    if (files) filesData = await saveFiles(user_id, filesPath, files)
+    const newsImage = await saveFiles(user_id, imagesPath, image)
+
+    // формируем запись для вставки
+    const newsRecord = new News({ title, description, releaseDate, user: user_id, image: newsImage, files: filesData })
     await newsRecord.save()
+
     return res.status(200).json({ msg: 'Запись успешно создана' })
   } catch (error) {
     handleError(error, next)
@@ -61,7 +69,8 @@ const getNewsRecords = async (req, res, next) => {
     const currentDate = new Date()
     const data = await News.find({ releaseDate: { $lte: currentDate } })
       .populate('files')
-      .populate('user')
+      .populate({ path: 'user', select: 'name email' })
+      .populate('image')
     return res.status(200).json({ data, count: data.length })
   } catch (error) {
     handleError(error, next)

@@ -11,6 +11,10 @@ import MainBar from './components/MainBar'
 import AuthUser from './components/auth/AuthUser'
 import RegisterUser from './components/auth/RegisterUser'
 import MainPage from './components/MainPage'
+import { RequireAuth } from './components/auth/RequireAuth'
+import Forbidden from './components/Forbidden'
+import NotFound from './components/NotFound'
+import Footer from './components/Footer'
 
 // компоненты для страницы
 
@@ -24,11 +28,18 @@ const App = () => {
     <Provider store={store}>
       <BrowserRouter>
         <MainBar />
-        <Routes>
-          <Route path="/sign-in" element={<AuthUser />} />
-          <Route path="/new-user" element={<RegisterUser />} />
-          <Route path="/" element={<MainPage />} />
-        </Routes>
+        <div className="app-content">
+          <Routes>
+            <Route path="/sign-in" element={<AuthUser />} />
+            <Route path="/new-user" element={<RegisterUser />} />
+            <Route element={<RequireAuth />}>
+              <Route path="/" element={<MainPage />} />
+            </Route>
+            <Route element={<Forbidden />} path="/forbidden" />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Footer />
       </BrowserRouter>
     </Provider>
   )
