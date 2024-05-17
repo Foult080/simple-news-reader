@@ -2,26 +2,26 @@ import React, { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Container, Header, Item, Pagination } from 'semantic-ui-react'
-import { selectNews, loadNews } from '../reducers/NewsSlice'
+import { loadMyNews, selectNews } from '../reducers/NewsSlice'
 import Loader from './Loader'
-import { formatDateTime } from '../utils/utils'
 import { Link } from 'react-router-dom'
+import { formatDateTime } from '../utils/utils'
 
 /**
- * Новостная лента
+ * Компонент отрисовки элементов на странице
  */
-const NewsFeed = ({ news, count }) => {
+const NewsFeed = ({ data, count }) => {
   // константа с размером страницы
   const pageSize = 5
 
   // пагинация
   const [currentPage, setCurentPage] = useState(1)
-  const data = useMemo(() => {
-    const tableData = news
+  const paginatedNews = useMemo(() => {
+    const tableData = data
     const firstPageIndex = (currentPage - 1) * pageSize
     const lastPageIndex = firstPageIndex + pageSize
     return tableData.slice(firstPageIndex, lastPageIndex)
-  }, [news, currentPage])
+  }, [data, currentPage])
 
   // переключалка
   const handlePaginationChange = (e, { activePage }) => setCurentPage(activePage)
@@ -32,7 +32,7 @@ const NewsFeed = ({ news, count }) => {
   return (
     <div className="items-list">
       <Item.Group>
-        {data.map((item) => (
+        {paginatedNews.map((item) => (
           <Item key={item._id}>
             {item?.image ? (
               <Item.Image size="small" src={'/images/' + item.image.name} alt={item.image.name} />
@@ -43,8 +43,8 @@ const NewsFeed = ({ news, count }) => {
               <Item.Header as={Link} to={'/news/' + item._id}>
                 {item.title}
               </Item.Header>
-              <Item.Extra>Статью написал: {item.user.name}</Item.Extra>
               <Item.Description>{item.description}</Item.Description>
+              <Item.Meta>Дата создания: {formatDateTime(item.date)}</Item.Meta>
               <Item.Meta>Дата публикации: {formatDateTime(item.releaseDate)}</Item.Meta>
             </Item.Content>
           </Item>
@@ -58,38 +58,32 @@ const NewsFeed = ({ news, count }) => {
     </div>
   )
 }
-NewsFeed.propTypes = { news: PropTypes.array, count: PropTypes.number }
+NewsFeed.propTypes = { data: PropTypes.array, count: PropTypes.number }
 
 /**
- * Основной компонент приложения c новостной лентой
+ * Компонент для страницы пользователя
  */
-const MainPage = () => {
+const MyPage = () => {
   const dispatch = useDispatch()
   const { loading, news, count } = useSelector(selectNews)
 
   useEffect(() => {
-    dispatch(loadNews())
+    dispatch(loadMyNews())
   }, [])
 
-  const updateNews = () => dispatch(loadNews())
-  console.log(news)
+  const updateNews = () => dispatch(loadMyNews())
 
   return (
     <Container>
       <div className="header" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <Header as="h2" textAlign="left" content="Новости за сегодня:" />
+        <Header as="h2" textAlign="left" content="Мои новости:" />
         <div>
+          <Button color="green" as={Link} to="/create-news" content="Добавить" icon="plus" />
           <Button color="teal" content="Обновить" icon="refresh" onClick={updateNews} />
         </div>
       </div>
-      {loading ? (
-        <Loader msg="Загрузка новостной ленты" size="large" />
-      ) : (
-        <div className="news-feed">
-          <NewsFeed count={count} news={news} />{' '}
-        </div>
-      )}
+      {loading ? <Loader size="large" msg="Загрузка новостной ленты..." /> : <NewsFeed data={news} count={count} updateFunc={updateNews} />}
     </Container>
   )
 }
-export default MainPage
+export default MyPage

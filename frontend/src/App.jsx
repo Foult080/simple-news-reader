@@ -16,6 +16,8 @@ import Forbidden from './components/Forbidden'
 import NotFound from './components/NotFound'
 import Footer from './components/Footer'
 import News from './components/News'
+import MyPage from './components/MyPage'
+import EditNews from './components/EditNews'
 
 // компоненты для страницы
 
@@ -35,6 +37,9 @@ const App = () => {
             <Route path="/new-user" element={<RegisterUser />} />
             <Route element={<RequireAuth />}>
               <Route path="/" element={<MainPage />} />
+              <Route path="/my" element={<MyPage />} />
+              <Route path="/create-news" element={<EditNews />} />
+              <Route path="/edit-news/:id" element={<EditNews />} />
               <Route path="/news/:id" element={<News />} />
             </Route>
             <Route element={<Forbidden />} path="/forbidden" />

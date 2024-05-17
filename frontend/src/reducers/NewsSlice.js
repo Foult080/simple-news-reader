@@ -12,6 +12,16 @@ export const loadNews = createAsyncThunk('news/loadNews', async (data, { rejectW
   }
 })
 
+// загрузка новостей пользователя
+export const loadMyNews = createAsyncThunk('news/loadMyNews', async (data, { rejectWithValue }) => {
+  try {
+    const res = await axiosApiInstance.get(baseUrl + '/api/news/my')
+    return res.data
+  } catch (error) {
+    return rejectWithValue({ status: error.response.status, data: error.response.data })
+  }
+})
+
 // загрузка записи новости
 export const loadRecord = createAsyncThunk('news/loadRecord', async (data, { rejectWithValue }) => {
   try {
@@ -50,6 +60,20 @@ export const NewsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // загрузка новостей пользователя
+      .addCase(loadMyNews.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(loadMyNews.fulfilled, (state, action) => {
+        state.loading = false
+        const { data, count } = action.payload
+        state.news = data
+        state.count = count
+      })
+      .addCase(loadMyNews.rejected, (state, action) => {
+        state.loading = false
+        state.alert = action.payload
+      })
       // загрузка новости для стараницы просмотра
       .addCase(loadRecord.pending, (state) => {
         state.loading = true
