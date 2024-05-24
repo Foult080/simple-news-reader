@@ -24,7 +24,7 @@ const registerUser = async (req, res, next) => {
     const userRecord = new User({ name, email, salt, password: hashded })
     await userRecord.save()
 
-    const payload = { name: user.name, email: user.email, date: user.date, user_id: user._id }
+    const payload = { name: userRecord.name, email: userRecord.email, date: userRecord.date, user_id: userRecord._id }
     const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFE })
 
     return res.status(200).json({ msg: 'Пользователь успешно зарегистрирован', user: payload, authToken })

@@ -6,11 +6,12 @@ import { loadMyNews, selectNews } from '../reducers/NewsSlice'
 import Loader from './Loader'
 import { Link } from 'react-router-dom'
 import { formatDateTime } from '../utils/utils'
+import DeleteNews from './Modals'
 
 /**
  * Компонент отрисовки элементов на странице
  */
-const NewsFeed = ({ data, count }) => {
+const NewsFeed = ({ data, count, updateFunc }) => {
   // константа с размером страницы
   const pageSize = 5
 
@@ -46,6 +47,7 @@ const NewsFeed = ({ data, count }) => {
               <Item.Description>{item.description}</Item.Description>
               <Item.Meta>Дата создания: {formatDateTime(item.date)}</Item.Meta>
               <Item.Meta>Дата публикации: {formatDateTime(item.releaseDate)}</Item.Meta>
+              <DeleteNews id={item._id} updateFunc={updateFunc} />
             </Item.Content>
           </Item>
         ))}
@@ -58,7 +60,7 @@ const NewsFeed = ({ data, count }) => {
     </div>
   )
 }
-NewsFeed.propTypes = { data: PropTypes.array, count: PropTypes.number }
+NewsFeed.propTypes = { data: PropTypes.array, count: PropTypes.number, updateFunc: PropTypes.func }
 
 /**
  * Компонент для страницы пользователя

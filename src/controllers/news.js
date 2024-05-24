@@ -47,10 +47,11 @@ const addNewsRecord = async (req, res, next) => {
     const { user_id } = req.user
 
     // проверка существания файлов в запросе
-    const { files = null, image = null } = req.files
-    let filesData = []
-    if (files) filesData = await saveFiles(user_id, filesPath, files)
-    const newsImage = await saveFiles(user_id, imagesPath, image)
+
+    // TODO: Поправить метод сохранения файлов дублей файлов
+    //! если передавать массив с фронта то прилетает ключ files[]. Надо будет разобраться
+    const filesData = await saveFiles(user_id, filesPath, req.files['files[]'])
+    const newsImage = await saveFiles(user_id, imagesPath, req.files.image)
 
     // формируем запись для вставки
     const newsRecord = new News({ title, description, releaseDate, user: user_id, image: newsImage, files: filesData, content })
@@ -83,7 +84,7 @@ const getNewsRecords = async (req, res, next) => {
 const getMyNewsRecords = async (req, res, next) => {
   try {
     const { user_id } = req.user
-    const data = await News.find({ user: user_id }).populate('files')
+    const data = await News.find({ user: user_id }).populate('files').populate('image')
     return res.status(200).json({ data, count: data.length })
   } catch (error) {
     handleError(error, next)

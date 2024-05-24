@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { baseUrl } from '../utils/utils'
-import { axiosApiInstance } from '../utils/axiosInterceprots'
+import { axiosApiInstance, axiosApiInstanceFiles } from '../utils/axiosInterceprots'
 
 // загрузка новостей пользователя
 export const loadNews = createAsyncThunk('news/loadNews', async (data, { rejectWithValue }) => {
@@ -36,6 +36,17 @@ export const loadRecord = createAsyncThunk('news/loadRecord', async (data, { rej
 export const deleteRecord = createAsyncThunk('news/deleteRecord', async (data, { rejectWithValue }) => {
   try {
     const res = await axiosApiInstance.delete(baseUrl + '/api/news/' + data)
+    return res.data
+  } catch (error) {
+    return rejectWithValue({ status: error.response.status, data: error.response.data })
+  }
+})
+
+// добавить запись новости
+export const addNewRecord = createAsyncThunk('news/addNewRecord', async (data, { rejectWithValue }) => {
+  try {
+    // TODO: проверка файлов
+    const res = await axiosApiInstanceFiles.post(baseUrl + '/api/news', data, { headers: { 'Content-type': 'multipart/form-data' } })
     return res.data
   } catch (error) {
     return rejectWithValue({ status: error.response.status, data: error.response.data })

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
-// const config = require('config')
-// const db = config.get('MongoURI')
 
+/**
+ * Метод для подключения к MongoDB
+ */
 const connectDB = async () => {
   try {
     await mongoose.connect(`mongodb://${process.env.USER}:${process.env.PASSWORD}@localhost:${process.env.DB_PORT}/news-reader?authSource=admin`)
