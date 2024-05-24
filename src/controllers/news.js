@@ -123,4 +123,18 @@ const getNewsRecord = async (req, res, next) => {
   }
 }
 
-module.exports = { addNewsRecord, getNewsRecords, getNewsRecord, getMyNewsRecords, deleteNewsRecord }
+/**
+ * Обновить запись в базе
+ */
+const editNewsRecord = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { title, description, releaseDate, content } = req.body
+    const record = await News.findOneAndUpdate({ _id: id }, { title, description, releaseDate, content }, { new: true })
+    return res.status(200).json({ msg: 'Запись была успешно изменена', data: record })
+  } catch (error) {
+    handleError(error, next)
+  }
+}
+
+module.exports = { editNewsRecord, addNewsRecord, getNewsRecords, getNewsRecord, getMyNewsRecords, deleteNewsRecord }

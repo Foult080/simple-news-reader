@@ -53,6 +53,17 @@ export const addNewRecord = createAsyncThunk('news/addNewRecord', async (data, {
   }
 })
 
+// обновить запись
+export const updateNewsRecord = createAsyncThunk('news/updateNewsRecord', async (data, { rejectWithValue }) => {
+  try {
+    const { id, values } = data
+    const res = await axiosApiInstance.put(baseUrl + '/api/news/' + id, values, { headers: { 'Content-type': 'application/json' } })
+    return res.data
+  } catch (error) {
+    return rejectWithValue({ status: error.response.status, data: error.response.data })
+  }
+})
+
 const initialState = {
   loading: false,
   news: [],

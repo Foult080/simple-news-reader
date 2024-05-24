@@ -48,6 +48,7 @@ const NewsFeed = ({ data, count, updateFunc }) => {
               <Item.Meta>Дата создания: {formatDateTime(item.date)}</Item.Meta>
               <Item.Meta>Дата публикации: {formatDateTime(item.releaseDate)}</Item.Meta>
               <DeleteNews id={item._id} updateFunc={updateFunc} />
+              <Button as={Link} to={'/edit-news/' + item._id} icon="pencil" color="yellow" />
             </Item.Content>
           </Item>
         ))}
