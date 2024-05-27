@@ -26,6 +26,7 @@ router.get('/', getNewsRecords)
 // получить созданные мной записи
 router.get('/my', getMyNewsRecords)
 
+// получить запись по id
 router.get('/:id', getNewsRecord)
 
 // удалить запись из базы

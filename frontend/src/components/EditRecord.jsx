@@ -6,12 +6,16 @@ import { loadRecord, selectNews, updateNewsRecord } from '../reducers/NewsSlice'
 import Loader from './Loader'
 import { useFormik } from 'formik'
 
+/**
+ * Компонент для редактирования записи
+ */
 const EditRecord = () => {
   const { id } = useParams()
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { loading, record } = useSelector(selectNews)
 
+  // загружаем запись по id из строки адреса
   useEffect(() => {
     dispatch(loadRecord(id))
   }, [])

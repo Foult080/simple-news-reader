@@ -4,6 +4,7 @@ const News = require('../models/news')
 const File = require('../models/files')
 const { isValidObjectId } = require('mongoose')
 
+// TODO: вынести в utils
 // путь к папке в зависимости от окружения
 const filesPath = process.env.ENV === 'production' ? path.resolve('frontend', 'build', 'public', 'files') : path.resolve('frontend', 'public', 'files')
 const imagesPath = process.env.ENV === 'production' ? path.resolve('frontend', 'build', 'public', 'images') : path.resolve('frontend', 'public', 'images')
@@ -46,8 +47,6 @@ const addNewsRecord = async (req, res, next) => {
     const { title, description, releaseDate, content } = req.body
     const { user_id } = req.user
 
-    // проверка существания файлов в запросе
-
     // TODO: Поправить метод сохранения файлов дублей файлов
     //! если передавать массив с фронта то прилетает ключ files[]. Надо будет разобраться
     const filesData = await saveFiles(user_id, filesPath, req.files['files[]'])
@@ -56,7 +55,7 @@ const addNewsRecord = async (req, res, next) => {
     // формируем запись для вставки
     const newsRecord = new News({ title, description, releaseDate, user: user_id, image: newsImage, files: filesData, content })
     await newsRecord.save()
-
+    // ответ сервиса
     return res.status(200).json({ msg: 'Запись успешно создана' })
   } catch (error) {
     handleError(error, next)
@@ -111,12 +110,14 @@ const getNewsRecord = async (req, res, next) => {
   try {
     const { id } = req.params
 
-    // проверка валидности объекта
+    // проверка валидности id для поиска
     const check = isValidObjectId(id)
     if (!check) throw Forbidden('Действие запрещено')
 
+    // ищем новость
     const data = await News.findOne({ _id: id }).populate({ path: 'user', select: 'name email' }).populate('image').populate('files')
     if (!data) throw NotFound('Запись с этим идентификатор не найдена')
+
     return res.status(200).json({ data })
   } catch (error) {
     handleError(error, next)
@@ -124,7 +125,7 @@ const getNewsRecord = async (req, res, next) => {
 }
 
 /**
- * Обновить запись в базе
+ * Обновить запись в базе новостей
  */
 const editNewsRecord = async (req, res, next) => {
   try {

@@ -6,12 +6,12 @@ const User = require('../models/users')
 const { isMatchPassword } = require('../utils/utils')
 
 /**
- * Зарегистрировать нового пользователя в сервисе
+ * Маршрут для регистрации нового пользователя в сервисе
  */
 const registerUser = async (req, res, next) => {
   try {
     const { name, password, email } = req.body
-    // проверка наличия пользователя
+    // проверка наличия пользователя по email
     const user = await users.findOne({ email })
     if (user) throw BadRequest('Пользователь уже зарегистрирован в системе')
 
@@ -48,6 +48,7 @@ const authUser = async (req, res, next) => {
     const isMatch = isMatchPassword(password, user.password, user.salt)
     if (!isMatch) throw Unauthorized('Не корректное имя пользователя или пароль')
 
+    // формируем токен доступа
     const payload = { name: user.name, email: user.email, date: user.date, user_id: user._id }
     const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFE })
 

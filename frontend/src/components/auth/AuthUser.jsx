@@ -12,15 +12,15 @@ import Alerts from '../Alerts'
  * Главный компонент авторизации пользователя
  */
 const AuthUser = () => {
-  // редирект
+  // получить текущее место положение для редиректа в случае успешной авторизации
   const location = useLocation()
   const auth = useSelector(selectAuth)
   const from = location.state?.from?.pathname || '/'
 
-  // логика приложения
   const dispatch = useDispatch()
+  // значения для полей формика
   const initialValues = { email: '', password: '' }
-
+  // midleware валидация запроса
   const validate = (values) => {
     const errors = {}
     if (!values.email) errors.email = 'Укажите Email пользователя'
@@ -39,6 +39,7 @@ const AuthUser = () => {
     }
   })
 
+  // в случае если пользователь авторизован, то переводим его на страницу откуда он пришел
   if (auth.isAuth) return <Navigate to={from} replace />
 
   return (

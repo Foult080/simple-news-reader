@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { baseUrl } from '../utils/utils'
 import { axiosApiInstance } from '../utils/axiosInterceprots'
 
+// TODO: вынести в utils
 const config = { headers: { 'Content-type': 'application/json' } }
 
 // Метод для авторизации пользователя
@@ -35,6 +36,7 @@ export const loadUser = createAsyncThunk('auth/loadUser', async (data, { rejectW
   }
 })
 
+// объект для инициализации стэйка
 const initialState = {
   isAuth: null,
   loading: false,
@@ -46,6 +48,7 @@ export const AuthSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    // события для "выхода" из учетной записи
     logOut: (state) => {
       state.isAuth = null
       state.loading = false
@@ -53,6 +56,7 @@ export const AuthSlice = createSlice({
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
     },
+    // очистка алертов
     cleanAlert: (state) => {
       state.alert = null
     }

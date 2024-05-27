@@ -4,6 +4,9 @@ import { Button, Header, Icon, Loader, Modal } from 'semantic-ui-react'
 import { useDispatch } from 'react-redux'
 import { deleteRecord } from '../reducers/NewsSlice'
 
+/**
+ * Модальное окно для удлаления записи
+ */
 const DeleteNews = ({ id, updateFunc }) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)

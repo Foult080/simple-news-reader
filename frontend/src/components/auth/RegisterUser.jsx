@@ -8,16 +8,20 @@ import { useFormik } from 'formik'
 import Loader from '../Loader'
 import Alerts from '../Alerts'
 
+/**
+ * Компонент для регистрации пользователя
+ */
 const RegisterUser = () => {
-  // редирект
+  // редирект в случае если пользователь авторизован
   const location = useLocation()
   const auth = useSelector(selectAuth)
   const from = location.state?.from?.pathname || '/'
+  if (auth.isAuth) return <Navigate to={from} replace />
 
-  // логика приложения
   const dispatch = useDispatch()
+  // значения для formik
   const initialValues = { name: '', email: '', password: '' }
-
+  // middleware валидация формы
   const validate = (values) => {
     const errors = {}
     if (!values.name) errors.name = 'Укажите Имя пользователя'
@@ -36,8 +40,6 @@ const RegisterUser = () => {
       dispatch(registerUser(values))
     }
   })
-
-  if (auth.isAuth) return <Navigate to={from} replace />
 
   return (
     <Grid textAlign="center" style={{ minHeight: '80vh' }} verticalAlign="middle">

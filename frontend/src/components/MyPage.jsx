@@ -24,7 +24,7 @@ const NewsFeed = ({ data, count, updateFunc }) => {
     return tableData.slice(firstPageIndex, lastPageIndex)
   }, [data, currentPage])
 
-  // переключалка
+  // переключалка пагинации
   const handlePaginationChange = (e, { activePage }) => setCurentPage(activePage)
 
   // всего страниц

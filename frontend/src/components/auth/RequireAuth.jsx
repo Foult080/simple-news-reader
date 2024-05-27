@@ -4,7 +4,7 @@ import { selectAuth } from '../../reducers/austhSlice'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 /**
- * Обертка для авторизации
+ * Обертка для авторизации в react router dom 6
  */
 export const RequireAuth = () => {
   const auth = useSelector(selectAuth) // селектор с авторизацией и проверка токена

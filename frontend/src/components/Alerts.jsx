@@ -17,7 +17,6 @@ const Alerts = ({ icon, alert, onDismiss }) => {
 
   return <Message icon={icon} color={color} header={msg} list={list} onDismiss={handleClose} />
 }
-
 Alerts.propTypes = { alert: PropTypes.object, icon: PropTypes.string, onDismiss: PropTypes.func }
 
 export default Alerts

@@ -1,6 +1,9 @@
 import React from 'react'
 import { Container, Grid, Header, List } from 'semantic-ui-react'
 
+/**
+ * Подвал для старницы приложения
+ */
 const Footer = () => {
   return (
     <Container>
